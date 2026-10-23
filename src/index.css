@@ -1,0 +1,220 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@font-face {
+  font-family: "Deutschlander";
+  src: url("/fonts/Deutschlander.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@theme {
+  --font-display: "Deutschlander", "Poppins", sans-serif;
+  --font-num: "Deutschlander", "Poppins", sans-serif;
+  --animate-aurora-bg: aurora-bg 60s linear infinite;
+  @keyframes aurora-bg {
+    from { background-position: 50% 50%, 50% 50%; }
+    to { background-position: 350% 50%, 350% 50%; }
+  }
+}
+
+:root {
+  --ink: #0e1013;
+  --stripe-color: #fff; /* read by the Animated Rays component */
+}
+.dark { --stripe-color: #000; }
+
+body { margin: 0; background: #f2f3f5; color: var(--ink); font-family: "Poppins", sans-serif; }
+
+/* Shared size of the big titles (column 1 titles + "Projects") */
+.title { font-size: var(--title, clamp(2.25rem, 6vh, 4rem)); position: relative; top: var(--title-shift, 0px); }
+
+/* Rectangles (square corners) */
+.rect {
+  border-radius: 0;
+  background: linear-gradient(145deg, rgba(14,16,19,.13), rgba(14,16,19,.07));
+}
+
+/* Inverted-corner cut: a circular concave notch around the action button.
+   --cut is the button radius plus the desired visual gap, leaving room for the metal ring. */
+.cut {
+  -webkit-mask-image: radial-gradient(circle at var(--cx) var(--cy), transparent calc(var(--cut) - 0.5px), #000 calc(var(--cut) + 0.5px));
+  mask-image: radial-gradient(circle at var(--cx) var(--cy), transparent calc(var(--cut) - 0.5px), #000 calc(var(--cut) + 0.5px));
+}
+
+/* Column 2 internal scroll; each card's 3:1 ratio is set on the card itself. */
+.scroll-col { scrollbar-width: thin; scrollbar-color: rgba(14,16,19,.3) transparent; }
+.scroll-col > * { flex-shrink: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-aurora-bg { animation: none; }
+}
+
+/* ---- Vengeance UI StackedLogos: variables & animation (from the library's globals.css) ---- */
+.stacked-logos {
+  --duration: 30;
+  --items: 4;
+  --lists: 4;
+  --stagger: 0;
+  --logo-width: 200px;
+  --mouse-x: 0px;
+  --mouse-y: 0px;
+  container-type: inline-size; /* lets the names scale with the row width (cqw) */
+}
+.stacked-logos:hover .stacked-logos__glow,
+.stacked-logos:hover .stacked-logos__border-glow { opacity: 1; }
+.stacked-logos__cell {
+  --base-delay: calc(sin((var(--index) / var(--lists)) * 45deg) * var(--stagger));
+}
+.stacked-logos__logo {
+  animation-name: var(--anim, stacked-logos-appear-2);
+  animation-duration: calc(var(--duration) * 1s);
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
+  animation-delay: calc((var(--duration) / var(--items)) * (var(--items) - var(--i)) * -1s + (var(--base-delay, 0) * 1s));
+}
+/* A cell cycles through its N logos: each one is visible for 1/N of the cell's cycle and cross-fades with
+   the next one. One keyframe set per N (2, 3, 4 logos per cell). */
+@keyframes stacked-logos-appear-2 {
+  0%, 100% { opacity: 0; filter: blur(4px); }
+  5%, 45%  { opacity: 1; filter: blur(0); }
+  50%      { opacity: 0; filter: blur(4px); }
+}
+@keyframes stacked-logos-appear-3 {
+  0%, 100% { opacity: 0; filter: blur(4px); }
+  3.5%, 30% { opacity: 1; filter: blur(0); }
+  33.3%    { opacity: 0; filter: blur(4px); }
+}
+@keyframes stacked-logos-appear-4 {
+  0%, 100% { opacity: 0; filter: blur(4px); }
+  2.5%, 22% { opacity: 1; filter: blur(0); }
+  25%      { opacity: 0; filter: blur(4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stacked-logos__logo { animation: none; opacity: 1; }
+  .stacked-logos__item:not([style*="--i: 0"]) { display: none; }
+}
+
+/* MorphText: no cycling for reduced-motion users, show the first word only */
+@media (prefers-reduced-motion: reduce) {
+  .morph-word { animation: none !important; }
+  .morph-word:first-child { opacity: 1 !important; transform: translate(0, -50%) !important; }
+}
+
+
+/* ============ "+" / "-" button: black <-> glossy red ============ */
+.plus-core {
+  position: relative;
+  overflow: hidden;
+  background-color: #0e1013;
+  transition: background-color 0.55s ease, box-shadow 0.55s ease;
+}
+/* the gloss: a soft highlight on the upper left + a lighter top half, only visible in the open (red) state */
+.plus-core::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 85% at 28% 12%, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 48%, rgba(0, 0, 0, 0.28) 100%);
+  opacity: 0;
+  transition: opacity 0.55s ease;
+}
+.plus-btn[data-open="true"] .plus-core {
+  background-color: #d4121f;
+  box-shadow: inset 0 calc(var(--btn) * -0.05) calc(var(--btn) * 0.1) rgba(90, 0, 8, 0.55);
+}
+.plus-btn[data-open="true"] .plus-core::after { opacity: 1; }
+
+.plus-glyph {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.55s cubic-bezier(0.65, 0, 0.2, 1);
+}
+.plus-btn[data-open="true"] .plus-glyph { transform: rotate(180deg); }
+.plus-bar {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--btn) * 0.34);
+  height: max(2px, calc(var(--btn) * 0.045));
+  border-radius: 999px;
+  background: #fff;
+  transition: transform 0.55s cubic-bezier(0.65, 0, 0.2, 1), opacity 0.4s ease;
+}
+.plus-bar-h { transform: translate(-50%, -50%); }
+.plus-bar-v { transform: translate(-50%, -50%) rotate(90deg); }
+/* "+" -> "-": the vertical bar shrinks to nothing while the glyph turns */
+.plus-btn[data-open="true"] .plus-bar-v { transform: translate(-50%, -50%) rotate(90deg) scaleX(0); opacity: 0; }
+
+/* ============ columns sliding / detail panels (see App.tsx) ============ */
+.slot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  transform: translate3d(var(--x, 0px), 0, 0);
+}
+.col-slot { z-index: 2; }
+.col-slot[data-hidden="true"] { opacity: 0; visibility: hidden; pointer-events: none; }
+.panel-slot {
+  z-index: 1;
+  clip-path: inset(0 100% 0 0);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.panel-slot[data-hidden="false"] { clip-path: inset(0 0 0 0); opacity: 1; visibility: visible; pointer-events: auto; }
+
+/* transitions only exist for a moment after a click (class "animating"), so resizing the window never animates */
+.animating { --ease: cubic-bezier(0.65, 0, 0.2, 1); }
+.animating .col-slot {
+  transition: transform 0.9s var(--ease) var(--d-cols), opacity 0.6s ease var(--d-cols), visibility 0s linear var(--d-cols);
+}
+.animating .col-slot[data-hidden="true"] {
+  transition: transform 0.9s var(--ease) var(--d-cols), opacity 0.5s ease var(--d-cols), visibility 0s linear calc(var(--d-cols) + 0.9s);
+}
+.animating .panel-slot {
+  transition: clip-path 0.7s var(--ease) 0s, opacity 0.35s ease 0s, visibility 0s linear 0.7s;
+}
+.animating .panel-slot[data-hidden="false"] {
+  transition: clip-path 0.85s var(--ease) var(--d-panel), opacity 0.55s ease var(--d-panel), visibility 0s linear 0s;
+}
+
+/* content of a panel: fades in when another card is chosen */
+@keyframes panel-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.panel-content { animation: panel-in 0.55s cubic-bezier(0.22, 0.8, 0.2, 1) both; }
+/* the text fades out softly at the top and bottom edges of the scrolling panel instead of being cut */
+.panel-content {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 1.2em, #000 calc(100% - 1.6em), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 1.2em, #000 calc(100% - 1.6em), transparent 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animating .col-slot, .animating .panel-slot, .plus-core, .plus-core::after, .plus-glyph, .plus-bar {
+    transition-duration: 0.01s !important;
+    transition-delay: 0s !important;
+  }
+  .panel-content { animation: none; }
+}
+
+
+/* enlarged image */
+@keyframes lightbox-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lightbox-img-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
+.lightbox { animation: lightbox-in 0.25s ease both; }
+.lightbox-img { animation: lightbox-img-in 0.35s cubic-bezier(0.22, 0.8, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) { .lightbox, .lightbox-img { animation: none; } }
+
+/* Vengeance UI glass border (used by the social flip button): hairline border with a soft inner highlight */
+.glass-border {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* mobile: description sliding open under its card */
+.inline-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.55s cubic-bezier(0.65, 0, 0.2, 1); }
+.inline-panel[data-open="true"] { grid-template-rows: 1fr; }
+@media (prefers-reduced-motion: reduce) { .inline-panel { transition-duration: 0.01s; } }
