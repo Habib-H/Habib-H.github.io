@@ -264,7 +264,7 @@ function Cluster({ year, city, company, companyText, open, onToggle }: { year: s
       })}
     >
       <div className="cut relative z-[2] grid size-full grid-rows-2" style={{ gridTemplateColumns: "1fr 2fr", gap: CLUSTER_GAP }}>
-        <div className="rect col-start-1 row-start-1 flex items-center justify-center font-medium leading-none whitespace-nowrap" style={{ fontFamily: '"Poppins", sans-serif', fontSize: "max(11px, calc(var(--h) * 0.14))" }}>{year}</div>
+        <div className="rect col-start-1 row-start-1 flex items-center justify-center font-medium leading-none whitespace-nowrap" style={{ fontFamily: '"Poppins", sans-serif', fontSize: "calc(var(--h) * 0.14)" }}>{year}</div>
         <div className="rect relative col-start-1 row-start-2 min-h-0">
           <LogoCentered logo={city} w="61%" h="47%" />
         </div>
@@ -304,7 +304,7 @@ function Stat({ n, text, open, onToggle }: { n: string; text: string; open: bool
         <div
           className="rect flex size-full items-center leading-relaxed text-neutral-700"
           style={{
-            fontSize: "max(12px, calc(var(--h) * 0.115))",
+            fontSize: "calc(var(--h) * 0.115)",
             paddingLeft: "calc(var(--cut) + var(--h) * 0.08)",
             paddingRight: "calc(var(--h) * 0.1)",
           }}
@@ -760,7 +760,7 @@ function DesktopApp() {
           <Stat n="1" text="4-week live chat analysis" open={view?.kind === "proj" && view.i === 0} onToggle={() => toggle("proj", 0)} />
           <Stat n="2" text={"Hotel guest analysis in R\u00a0&\u00a0SAS"} open={view?.kind === "proj" && view.i === 1} onToggle={() => toggle("proj", 1)} />
           <div ref={signature} className="mt-auto flex flex-col" style={{ gap: "calc(var(--h) * 0.26)" }}>
-            <p className="font-medium" style={{ fontSize: "max(14px, calc(var(--h) * 0.2))" }}>Habib <br/> HAMMARLEBIOD</p>
+            <p className="font-medium" style={{ fontSize: "calc(var(--h) * 0.2)" }}>Habib <br/>HAMMARLEBIOD</p>
             <FitTitle>DATA <RoleMorph /></FitTitle>
             <SocialFlipButton email={CONTACT_EMAIL} />
           </div>
