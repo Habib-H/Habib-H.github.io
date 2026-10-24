@@ -148,8 +148,8 @@ function useClosedZoom(grid: RefObject<HTMLElement | null>, probe: RefObject<HTM
     const update = () => {
       const h = g.offsetWidth / TOTALK;
       const hc = probe.current!.offsetWidth;
-      // full effect up to 1024px wide, fading out to nothing at 1280px so the desktop layout stays as it was
-      const t = Math.min(1, Math.max(0, (1280 - window.innerWidth) / 256));
+      // full effect up to 1280px wide, fading out to nothing at 1700px so large screens keep their layout
+      const t = Math.min(1, Math.max(0, (1700 - window.innerWidth) / 420));
       g.style.setProperty("--k", String(1 + t * Math.max(0, hc / h - 1)));
     };
     update();
@@ -207,7 +207,7 @@ function PlusButton({ style, open, onClick, label }: { style: CSSProperties; ope
 const W1K = 3.3;
 const GAPK = 0.65;
 /** Tablet widths (desktop layout, narrow window): a description opens next to its own column only, never three columns at once */
-const TABLET_QUERY = "(max-width: 1100px)";
+const TABLET_QUERY = "(max-width: 1366px)";
 const CLOSEDK = W1K + 6 + 2 * GAPK; // width of the closed composition (column 1 + columns 2 and 3 + 2 gaps), in card heights
 const PANELK = 6 + GAPK; // detail panel = the width of two 3h columns plus the gap between them
 const TOTALK = 3 + PANELK + 3 + 2 * GAPK; // widest composition: [col 2][panel][col 3] or [col 2][col 3][panel]
@@ -264,7 +264,7 @@ function Cluster({ year, city, company, companyText, open, onToggle }: { year: s
       })}
     >
       <div className="cut relative z-[2] grid size-full grid-rows-2" style={{ gridTemplateColumns: "1fr 2fr", gap: CLUSTER_GAP }}>
-        <div className="rect col-start-1 row-start-1 flex items-center justify-center font-medium leading-none whitespace-nowrap" style={{ fontFamily: '"Poppins", sans-serif', fontSize: "calc(var(--h) * 0.14)" }}>{year}</div>
+        <div className="rect col-start-1 row-start-1 flex items-center justify-center font-medium leading-none whitespace-nowrap" style={{ fontFamily: '"Poppins", sans-serif', fontSize: "max(11px, calc(var(--h) * 0.14))" }}>{year}</div>
         <div className="rect relative col-start-1 row-start-2 min-h-0">
           <LogoCentered logo={city} w="61%" h="47%" />
         </div>
@@ -304,7 +304,7 @@ function Stat({ n, text, open, onToggle }: { n: string; text: string; open: bool
         <div
           className="rect flex size-full items-center leading-relaxed text-neutral-700"
           style={{
-            fontSize: "calc(var(--h) * 0.115)",
+            fontSize: "max(12px, calc(var(--h) * 0.115))",
             paddingLeft: "calc(var(--cut) + var(--h) * 0.08)",
             paddingRight: "calc(var(--h) * 0.1)",
           }}
@@ -501,7 +501,7 @@ function DetailPanel({ detail, index, hidden, x, label, onZoom }: { detail: Deta
         index={index}
         onZoom={onZoom}
         className="panel-content scroll-col size-full overflow-y-auto"
-        style={{ padding: "calc(var(--h) * 0.2)", fontSize: "calc(var(--h) * 0.12)" }}
+        style={{ padding: "calc(var(--h) * 0.2)", fontSize: "max(13px, calc(var(--h) * 0.12))" }}
       />
     </aside>
   );
@@ -672,8 +672,8 @@ function DesktopApp() {
         ref={grid}
         className={`relative z-10 shrink-0 ${animating ? "animating" : ""}`}
         style={vars({
-          "--pad-x": "clamp(1.25rem, calc(13.3vw - 82px), 5.5rem)", // minimum margin left and right: 20px at 768px wide, growing to 88px from 1280px wide
-          "--pad-y": "6.5rem", // minimum margin above and below it
+          "--pad-x": "clamp(1.25rem, calc(13.3vw - 82px), min(5.5rem, 5vw))", // minimum margin left and right: 20px at 768px wide, then 5vw, never more than 88px (reached at 1760px wide)
+          "--pad-y": "clamp(2rem, 9vh, 6.5rem)", // minimum margin above and below it: 9% of the window height, between 32px and 104px
           "--card-gap": "16px", // vertical gap between two column 2 cards
           "--w1k": String(W1K),
           "--totalk": String(tablet ? CLOSEDK : TOTALK),
@@ -760,7 +760,7 @@ function DesktopApp() {
           <Stat n="1" text="4-week live chat analysis" open={view?.kind === "proj" && view.i === 0} onToggle={() => toggle("proj", 0)} />
           <Stat n="2" text={"Hotel guest analysis in R\u00a0&\u00a0SAS"} open={view?.kind === "proj" && view.i === 1} onToggle={() => toggle("proj", 1)} />
           <div ref={signature} className="mt-auto flex flex-col" style={{ gap: "calc(var(--h) * 0.26)" }}>
-            <p className="font-medium" style={{ fontSize: "calc(var(--h) * 0.2)" }}>Habib <br/> HAMMARLEBIOD</p>
+            <p className="font-medium" style={{ fontSize: "max(14px, calc(var(--h) * 0.2))" }}>Habib <br/> HAMMARLEBIOD</p>
             <FitTitle>DATA <RoleMorph /></FitTitle>
             <SocialFlipButton email={CONTACT_EMAIL} />
           </div>
